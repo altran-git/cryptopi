@@ -93,23 +93,28 @@ if __name__ == '__main__':
         # elif temp == 2:
         #     worker.restart_worker()
 
-        if debounce(LCD.SELECT):
+        if lcd.is_pressed(LCD.SELECT):
+            debounce(LCD.SELECT)
             worker.restart_worker()
-        elif debounce(LCD.LEFT):
+        elif lcd.is_pressed(LCD.LEFT):
+            debounce(LCD.LEFT)
             idx -= 1
             if idx == -1:
                 idx = max - 1
             worker.set_sym(symbol_list[idx], 'USD')
             worker.restart_worker()
-        elif debounce(LCD.RIGHT):
+        elif lcd.is_pressed(LCD.RIGHT):
+            debounce(LCD.RIGHT)
             idx += 1
             if idx == max:
                 idx = 0
             worker.set_sym(symbol_list[idx], 'USD')
             worker.restart_worker()
-        elif debounce(LCD.UP):
+        elif lcd.is_pressed(LCD.UP):
+            debounce(LCD.UP)
             pass
-        elif debounce(LCD.DOWN):
+        elif lcd.is_pressed(LCD.DOWN):
+            debounce(LCD.DOWN)
             pass
 
     # for data in data_24hr['Data']:
