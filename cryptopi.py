@@ -25,25 +25,26 @@ class Worker(threading.Thread):
         while True:
             url = 'https://min-api.cryptocompare.com/data/histohour?fsym={}&tsym={}&limit=24'.format(self.fsym.upper(),self.tsym.upper())
             self.data_24hr = json.loads(urlopen(url).read().decode('utf-8'))
-            old = self.data_24hr['Data'][0]['close']
-            new = self.data_24hr['Data'][-1]['close']
-
-            diff_perc_24hr = round((new / old - 1) * 100, 2)
-
-            if diff_perc_24hr >= 0:
-                lcd.set_color(0, 1, 0) # Green
-            else:
-                lcd.set_color(1, 0, 0) # Red
-
-            lcd.clear()
-            spaces = get_spaces(self.fsym, diff_perc_24hr)
-            message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
-            lcd.message(message)
 
             start_time = time.time()
             elapsed_time = 0
             self.restart = False
             while self.restart is not True and elapsed_time < 10:
+                old = self.data_24hr['Data'][0]['close']
+                new = self.data_24hr['Data'][-1]['close']
+
+                diff_perc_24hr = round((new / old - 1) * 100, 2)
+
+                if diff_perc_24hr >= 0:
+                    lcd.set_color(0, 1, 0)  # Green
+                else:
+                    lcd.set_color(1, 0, 0)  # Red
+
+                lcd.clear()
+                spaces = get_spaces(self.fsym, diff_perc_24hr)
+                message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                lcd.message(message)
+                
                 time.sleep(.1)
                 elapsed_time = time.time() - start_time
 
