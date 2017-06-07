@@ -55,6 +55,22 @@ class Worker(threading.Thread):
     def restart_worker(self):
         self.restart = True
 
+def debounce(button):
+    counter = 0
+    debounce_count = 10
+    current_state = False
+    current_time = time.time()
+    while True:
+        if time.time() != current_time:
+            reading = lcd.is_pressed(button)
+
+            if reading == current_state && counter > 0:
+                counter -= 1
+            if reading != current_state:
+                counter += 1
+            if counter >= debounce_count:
+                return True
+
 if __name__ == '__main__':
     symbol_list = ['BTC', 'ETH', 'SC', 'SJCX', 'MAID']
     idx = 0
@@ -70,26 +86,23 @@ if __name__ == '__main__':
         # elif temp == 2:
         #     worker.restart_worker()
 
-        if lcd.is_pressed(LCD.SELECT):
-            time.sleep(.2)
+        if debounce(LCD.SELECT):
             worker.restart_worker()
-        elif lcd.is_pressed(LCD.LEFT):
-            time.sleep(.2)
+        elif debounce(LCD.LEFT):
             idx -= 1
             if idx == -1:
                 idx = max - 1
             worker.set_sym(symbol_list[idx], 'USD')
             worker.restart_worker()
-        elif lcd.is_pressed(LCD.RIGHT):
-            time.sleep(.2)
+        elif debounce(LCD.RIGHT):
             idx += 1
             if idx == max:
                 idx = 0
             worker.set_sym(symbol_list[idx], 'USD')
             worker.restart_worker()
-        elif lcd.is_pressed(LCD.UP):
+        elif debounce(LCD.UP):
             pass
-        elif lcd.is_pressed(LCD.DOWN):
+        elif debounce(LCD.DOWN):
             pass
 
     # for data in data_24hr['Data']:
