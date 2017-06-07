@@ -56,9 +56,9 @@ class Worker(threading.Thread):
         self.restart = True
 
 def debounce(button):
-    debounce_delay = 50
-    current_button_state = False
-    last_button_state = False
+    debounce_delay = 500
+    current_button_state = True
+    last_button_state = True
     last_debounce_time = 0
     while True:
         print("HERE")
@@ -116,6 +116,8 @@ if __name__ == '__main__':
         elif lcd.is_pressed(LCD.DOWN):
             debounce(LCD.DOWN)
             pass
+
+        time.sleep(.1)
 
     # for data in data_24hr['Data']:
     #     print(data)
