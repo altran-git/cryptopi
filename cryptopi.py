@@ -56,8 +56,9 @@ class Worker(threading.Thread):
         self.restart = True
 
 if __name__ == '__main__':
-
     symbol_list = ['BTC', 'ETH', 'SC', 'STORJ', 'MAID']
+    idx = 0
+    max = len(symbol_list)
 
     worker = Worker(symbol_list[0], 'USD')
     worker.start()
@@ -70,14 +71,21 @@ if __name__ == '__main__':
         #     worker.restart_worker()
 
         if lcd.is_pressed(LCD.SELECT):
+            time.sleep(.5)
             worker.restart_worker()
         elif lcd.is_pressed(LCD.LEFT):
-            symbol_list.append(symbol_list.pop(0))
-            worker.set_sym(symbol_list[0], 'USD')
+            time.sleep(.5)
+            idx += 1
+            if idx == max:
+                idx = 0
+            worker.set_sym(symbol_list[idx], 'USD')
             worker.restart_worker()
         elif lcd.is_pressed(LCD.RIGHT):
-            symbol_list.insert(0, symbol_list.pop(-1))
-            worker.set_sym(symbol_list[0], 'USD')
+            time.sleep(.5)
+            idx -= 1
+            if idx == -1:
+                idx = max-1
+            worker.set_sym(symbol_list[idx], 'USD')
             worker.restart_worker()
         elif lcd.is_pressed(LCD.UP):
             pass
