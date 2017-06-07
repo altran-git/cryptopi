@@ -56,20 +56,27 @@ class Worker(threading.Thread):
         self.restart = True
 
 def debounce(button):
-    counter = 0
-    debounce_count = 10
-    current_state = False
-    current_time = time.time()
+    debounce_delay = 50
+    current_button_state = False
+    last_button_state = False
+    last_debounce_time = 0
     while True:
-        if time.time() != current_time:
-            reading = lcd.is_pressed(button)
+        print("HERE")
+        reading = lcd.is_pressed(button)
 
-            if reading == current_state && counter > 0:
-                counter -= 1
-            if reading != current_state:
-                counter += 1
-            if counter >= debounce_count:
+        if reading != last_button_state:
+            print("HERE0")
+            last_debounce_time = time.time()
+        if ((time.time() - last_debounce_time)/1000) > debounce_delay:
+            print("HERE1")
+            if reading != current_button_state:
+                print("HERE2")
+                current_button_state = reading
+            if current_button_state == True:
+                print("DEBOUNCED")
                 return True
+
+        last_button_state = reading
 
 if __name__ == '__main__':
     symbol_list = ['BTC', 'ETH', 'SC', 'SJCX', 'MAID']
