@@ -20,6 +20,7 @@ class Worker(threading.Thread):
         self.tsym = tsym
         self.data_24hr = None
         self.restart = False
+        self.hide = False
 
     def run(self):
         while True:
@@ -41,65 +42,71 @@ class Worker(threading.Thread):
                     lcd.set_color(1, 0, 0)  # Red
 
                 lcd.home()
-                spaces = get_spaces(self.fsym, diff_perc_24hr)
-                message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                if self.hide != True:
+                    spaces = get_spaces(self.fsym, diff_perc_24hr)
+                    message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                else:
+                    message = '{}'.format(new)
                 lcd.message(message)
                 
                 time.sleep(.1)
                 elapsed_time = time.time() - start_time
 
-
     def set_sym(self, fsym, tsym):
         self.fsym = fsym
         self.tsym = tsym
 
+    def hide_details(self):
+        self.hide = not self.hide
+
     def restart_worker(self):
         self.restart = True
 
-
 if __name__ == '__main__':
-    symbol_list = ['BTC', 'ETH', 'SC', 'SJCX', 'MAID']
-    idx = 0
-    max = len(symbol_list)
+    fsym_list = ['BTC', 'ETH', 'SC', 'SJCX', 'MAID']
+    tsym_list = ['USD', 'BTC']
+    fsym_idx = 0
+    tsym_idx = 0
+    max = len(fsym_list)
+    max = len(tsym_list)
 
-    worker = Worker(symbol_list[0], 'USD')
+    worker = Worker(fsym_list[0], 'USD')
     worker.start()
 
     while True:
-        # temp = int(input())
-        # if temp == 1:
-        #     worker.set_sym('BTC', 'USD')
-        # elif temp == 2:
-        #     worker.restart_worker()
-
         if lcd.is_pressed(LCD.SELECT):
             worker.restart_worker()
         elif lcd.is_pressed(LCD.LEFT):
-            idx -= 1
-            if idx == -1:
-                idx = max - 1
-            worker.set_sym(symbol_list[idx], 'USD')
+            fsym_idx -= 1
+            if fsym_idx == -1:
+                fsym_idx = max - 1
+            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
+                tsym_idx += 1
+                if tsym_idx == max:
+                    tsym_idx = 0
+            worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
         elif lcd.is_pressed(LCD.RIGHT):
-            idx += 1
-            if idx == max:
-                idx = 0
-            worker.set_sym(symbol_list[idx], 'USD')
+            fsym_idx += 1
+            if fsym_idx == max:
+                fsym_idx = 0
+            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
+                tsym_idx += 1
+                if tsym_idx == max:
+                    tsym_idx = 0
+            worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
         elif lcd.is_pressed(LCD.UP):
             pass
         elif lcd.is_pressed(LCD.DOWN):
-            pass
+            tsym_idx += 1
+            if tsym_idx == max:
+                tsym_idx = 0
+            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
+                tsym_idx += 1
+                if tsym_idx == max:
+                    tsym_idx = 0
+            worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+            worker.restart_worker()
 
         time.sleep(.1)
-
-    # for data in data_24hr['Data']:
-    #     print(data)
-
-
-
-
-
-
-
-
