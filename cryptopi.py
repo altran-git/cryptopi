@@ -23,6 +23,8 @@ class Worker(threading.Thread):
         self.restart = False
         self.toggle = False
 
+        This is a really long message.
+
     def run(self):
         while True:
             url = 'https://min-api.cryptocompare.com/data/histohour?fsym={}&tsym={}&limit=24'.format(self.fsym.upper(),self.tsym.upper())
@@ -30,10 +32,9 @@ class Worker(threading.Thread):
             lcd.clear()
             if self.data_24hr['Response'].upper().strip() == 'ERROR':
                 message = self.data_24hr['Message'].upper().strip()
-                lcd.message(message)
-                for i in range(lcd_columns - len(message)):
-                    time.sleep(0.1)
-                    lcd.move_left()
+                for i in len(message) % 16:
+                    lcd.message(message[i:(i + 16) - 1])
+                    time.sleep(0.2)
             else:
                 start_time = time.time()
                 elapsed_time = 0
