@@ -51,7 +51,7 @@ class Worker(threading.Thread):
                     else:
                         message = '{}{}{}%\n{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
                 else:
-                    message = '{}'.format(new)
+                    message = '\n {}'.format(new)
                 lcd.message(message)
                 
                 time.sleep(.1)
