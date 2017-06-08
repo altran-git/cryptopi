@@ -6,6 +6,7 @@ import threading
 import Adafruit_CharLCD as LCD
 from urllib.request import urlopen
 
+lcd_columns = 16
 lcd = LCD.Adafruit_CharLCDPlate()
 lcd.create_char(1, [4, 30, 21, 30, 21, 30, 4, 0]) #Create BTC symbol
 
@@ -27,35 +28,42 @@ class Worker(threading.Thread):
             url = 'https://min-api.cryptocompare.com/data/histohour?fsym={}&tsym={}&limit=24'.format(self.fsym.upper(),self.tsym.upper())
             self.data_24hr = json.loads(urlopen(url).read().decode('utf-8'))
             lcd.clear()
-            start_time = time.time()
-            elapsed_time = 0
-            self.restart = False
-            while self.restart is not True and elapsed_time < 10:
-                old = self.data_24hr['Data'][0]['close']
-                new = self.data_24hr['Data'][-1]['close']
-
-                diff_perc_24hr = round((new / old - 1) * 100, 2)
-
-                if diff_perc_24hr >= 0:
-                    lcd.set_color(0, 1, 0)  # Green
-                else:
-                    lcd.set_color(1, 0, 0)  # Red
-
-                lcd.home()
-                if self.toggle != True:
-                    spaces = get_spaces(self.fsym, diff_perc_24hr)
-                    if self.tsym == 'USD':
-                        message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
-                    elif self.tsym == 'BTC':
-                        message = '{}{}{}%\n{}{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), '\x01', new)
-                    else:
-                        message = '{}{}{}%\n{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
-                else:
-                    message = '\n {}'.format(new)
+            if self.data_24hr['Response'].upper().strip() == 'ERROR':
+                message = self.data_24hr['Message'].upper().strip()
                 lcd.message(message)
-                
-                time.sleep(.1)
-                elapsed_time = time.time() - start_time
+                for i in range(lcd_columns - len(message)):
+                    time.sleep(0.1)
+                    lcd.move_left()
+            else:
+                start_time = time.time()
+                elapsed_time = 0
+                self.restart = False
+                while self.restart is not True and elapsed_time < 10:
+                    old = self.data_24hr['Data'][0]['close']
+                    new = self.data_24hr['Data'][-1]['close']
+
+                    diff_perc_24hr = round((new / old - 1) * 100, 2)
+
+                    if diff_perc_24hr >= 0:
+                        lcd.set_color(0, 1, 0)  # Green
+                    else:
+                        lcd.set_color(1, 0, 0)  # Red
+
+                    lcd.home()
+                    if self.toggle != True:
+                        spaces = get_spaces(self.fsym, diff_perc_24hr)
+                        if self.tsym == 'USD':
+                            message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                        elif self.tsym == 'BTC':
+                            message = '{}{}{}%\n{}{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), '\x01', new)
+                        else:
+                            message = '{}{}{}%\n{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                    else:
+                        message = '\n {}'.format(new)
+                    lcd.message(message)
+
+                    time.sleep(.1)
+                    elapsed_time = time.time() - start_time
 
     def set_sym(self, fsym, tsym):
         self.fsym = fsym
