@@ -103,6 +103,7 @@ if __name__ == '__main__':
             worker.restart_worker()
         elif lcd.is_pressed(LCD.UP):
             worker.toggle_details()
+            worker.restart_worker()
         elif lcd.is_pressed(LCD.DOWN):
             tsym_idx += 1
             if tsym_idx == max:
