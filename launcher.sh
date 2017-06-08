@@ -4,5 +4,5 @@
 
 cd /
 cd home/pi/projects/cryptopi
-sudo python3 cryptopi.py &
+sudo python3 cryptopi.py
 cd /

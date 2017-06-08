@@ -75,20 +75,20 @@ def debounce(button):
             counter = 0
         else:
             counter += 1
-
         if counter == 30:
             return
         time.sleep(.01)
 
 if __name__ == '__main__':
-    fsym_list = ['BTC', 'ETH', 'SC', 'SJCX', 'MAID']
+    with open('symbols.txt', 'r') as fsym_list:
+        fsym_list = [i.upper().strip() for i in fsym_list]
     tsym_list = ['USD', 'BTC']
     fsym_idx = 0
     tsym_idx = 0
     fsym_max = len(fsym_list)
     tsym_max = len(tsym_list)
 
-    worker = Worker(fsym_list[0], 'USD')
+    worker = Worker(fsym_list[fsym_idx], tsym_list[tsym_idx])
     worker.start()
 
     while True:
@@ -133,4 +133,3 @@ if __name__ == '__main__':
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
 
-        time.sleep(.1)
