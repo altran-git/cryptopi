@@ -96,7 +96,7 @@ def debounce(button):
 
 if __name__ == '__main__':
     with open('symbols.txt', 'r') as fsym_list:
-        fsym_list = [i.upper().strip() for i in fsym_list]
+        fsym_list = [i.upper().strip() for i in fsym_list if i.upper().strip() != '']
     tsym_list = ['USD', 'BTC']
     fsym_idx = 0
     tsym_idx = 0
