@@ -20,7 +20,7 @@ class Worker(threading.Thread):
         self.tsym = tsym
         self.data_24hr = None
         self.restart = False
-        self.toggle_details = False
+        self.toggle = False
 
     def run(self):
         while True:
@@ -42,7 +42,7 @@ class Worker(threading.Thread):
                     lcd.set_color(1, 0, 0)  # Red
 
                 lcd.home()
-                if self.toggle_details != True:
+                if self.toggle != True:
                     spaces = get_spaces(self.fsym, diff_perc_24hr)
                     if self.tsym == 'USD':
                         message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
@@ -62,7 +62,7 @@ class Worker(threading.Thread):
         self.tsym = tsym
 
     def toggle_details(self):
-        self.toggle_details = not self.toggle_details
+        self.toggle = not self.toggle
 
     def restart_worker(self):
         self.restart = True
