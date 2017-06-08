@@ -106,7 +106,7 @@ if __name__ == '__main__':
             worker.restart_worker()
         elif lcd.is_pressed(LCD.DOWN):
             tsym_idx += 1
-            if tsym_idx == fsym_max:
+            if tsym_idx == tsym_max:
                 tsym_idx = 0
             if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
                 tsym_idx += 1
