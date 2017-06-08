@@ -20,7 +20,7 @@ class Worker(threading.Thread):
         self.tsym = tsym
         self.data_24hr = None
         self.restart = False
-        self.hide = False
+        self.toggle_details = False
 
     def run(self):
         while True:
@@ -42,9 +42,14 @@ class Worker(threading.Thread):
                     lcd.set_color(1, 0, 0)  # Red
 
                 lcd.home()
-                if self.hide != True:
+                if self.toggle_details != True:
                     spaces = get_spaces(self.fsym, diff_perc_24hr)
-                    message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                    if self.tsym == 'USD':
+                        message = '{}{}{}%\n${}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
+                    elif self.tsym == 'BTC':
+                        message = '{}{}{}%\n{}{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), '\x01', new)
+                    else:
+                        message = '{}{}{}%\n{}'.format(self.fsym, ' ' * spaces, '%+.2f' % (diff_perc_24hr), new)
                 else:
                     message = '{}'.format(new)
                 lcd.message(message)
@@ -56,8 +61,8 @@ class Worker(threading.Thread):
         self.fsym = fsym
         self.tsym = tsym
 
-    def hide_details(self):
-        self.hide = not self.hide
+    def toggle_details(self):
+        self.toggle_details = not self.toggle_details
 
     def restart_worker(self):
         self.restart = True
@@ -97,7 +102,7 @@ if __name__ == '__main__':
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
         elif lcd.is_pressed(LCD.UP):
-            pass
+            worker.toggle_details()
         elif lcd.is_pressed(LCD.DOWN):
             tsym_idx += 1
             if tsym_idx == max:
