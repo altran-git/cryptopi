@@ -76,8 +76,7 @@ def debounce(button):
         else:
             counter += 1
 
-        if counter == 50:
-            print("debounced")
+        if counter == 30:
             return
         time.sleep(.01)
 
