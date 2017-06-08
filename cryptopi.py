@@ -72,8 +72,8 @@ if __name__ == '__main__':
     tsym_list = ['USD', 'BTC']
     fsym_idx = 0
     tsym_idx = 0
-    max = len(fsym_list)
-    max = len(tsym_list)
+    fsym_max = len(fsym_list)
+    tsym_max = len(tsym_list)
 
     worker = Worker(fsym_list[0], 'USD')
     worker.start()
@@ -84,20 +84,20 @@ if __name__ == '__main__':
         elif lcd.is_pressed(LCD.LEFT):
             fsym_idx -= 1
             if fsym_idx == -1:
-                fsym_idx = max - 1
+                fsym_idx = fsym_max - 1
             if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
                 tsym_idx += 1
-                if tsym_idx == max:
+                if tsym_idx == tsym_max:
                     tsym_idx = 0
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
         elif lcd.is_pressed(LCD.RIGHT):
             fsym_idx += 1
-            if fsym_idx == max:
+            if fsym_idx == fsym_max:
                 fsym_idx = 0
             if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
                 tsym_idx += 1
-                if tsym_idx == max:
+                if tsym_idx == tsym_max:
                     tsym_idx = 0
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
@@ -106,11 +106,11 @@ if __name__ == '__main__':
             worker.restart_worker()
         elif lcd.is_pressed(LCD.DOWN):
             tsym_idx += 1
-            if tsym_idx == max:
+            if tsym_idx == fsym_max:
                 tsym_idx = 0
             if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
                 tsym_idx += 1
-                if tsym_idx == max:
+                if tsym_idx == tsym_max:
                     tsym_idx = 0
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
