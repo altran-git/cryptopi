@@ -22,8 +22,7 @@ class Worker(threading.Thread):
         self.data_24hr = None
         self.restart = False
         self.toggle = False
-
-        This is a really long message.
+        self.break_error = False
 
     def run(self):
         while True:
@@ -31,10 +30,14 @@ class Worker(threading.Thread):
             self.data_24hr = json.loads(urlopen(url).read().decode('utf-8'))
             lcd.clear()
             if self.data_24hr['Response'].upper().strip() == 'ERROR':
-                message = self.data_24hr['Message'].upper().strip()
-                for i in len(message) % 16:
-                    lcd.message(message[i:(i + 16) - 1])
-                    time.sleep(0.2)
+                self.break_error = False
+                message = self.data_24hr['Message'].upper()
+                for i in range((len(message) - 16)+(len(message) % 16)):
+                    if self.break_error:
+                        break
+                    lcd.clear()
+                    lcd.message('ERROR:\n{}'.format(message[i:(i + 16)]))
+                    time.sleep(0.03)
             else:
                 start_time = time.time()
                 elapsed_time = 0
@@ -72,6 +75,9 @@ class Worker(threading.Thread):
 
     def toggle_details(self):
         self.toggle = not self.toggle
+
+    def set_break_error(self):
+        self.break_error = True
 
     def restart_worker(self):
         self.restart = True
@@ -114,6 +120,7 @@ if __name__ == '__main__':
                 if tsym_idx == tsym_max:
                     tsym_idx = 0
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+            worker.set_break_error()
             worker.restart_worker()
         elif lcd.is_pressed(LCD.RIGHT):
             debounce(LCD.RIGHT)
@@ -125,6 +132,7 @@ if __name__ == '__main__':
                 if tsym_idx == tsym_max:
                     tsym_idx = 0
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+            worker.set_break_error()
             worker.restart_worker()
         elif lcd.is_pressed(LCD.UP):
             debounce(LCD.UP)
@@ -141,4 +149,3 @@ if __name__ == '__main__':
                     tsym_idx = 0
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.restart_worker()
-
