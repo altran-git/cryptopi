@@ -67,6 +67,20 @@ class Worker(threading.Thread):
     def restart_worker(self):
         self.restart = True
 
+def debounce(button):
+    counter = 0
+    while True:
+        reading = lcd.is_pressed(button)
+        if reading == True:
+            counter = 0
+        else:
+            counter += 1
+
+        if counter == 50:
+            print("debounced")
+            return
+        time.sleep(.01)
+
 if __name__ == '__main__':
     fsym_list = ['BTC', 'ETH', 'SC', 'SJCX', 'MAID']
     tsym_list = ['USD', 'BTC']
