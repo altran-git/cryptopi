@@ -102,6 +102,7 @@ if __name__ == '__main__':
     tsym_idx = 0
     fsym_max = len(fsym_list)
     tsym_max = len(tsym_list)
+    cycle = False
 
     worker = Worker(fsym_list[fsym_idx], tsym_list[tsym_idx])
     worker.start()
@@ -109,7 +110,8 @@ if __name__ == '__main__':
     while True:
         if lcd.is_pressed(LCD.SELECT):
             debounce(LCD.SELECT)
-            worker.restart_worker()
+            cycle = not cycle
+            # worker.restart_worker()
         elif lcd.is_pressed(LCD.LEFT):
             debounce(LCD.LEFT)
             fsym_idx -= 1
@@ -154,4 +156,16 @@ if __name__ == '__main__':
                     worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx+1])
             else:
                 worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+            worker.restart_worker()
+
+        if cycle is True:
+            fsym_idx += 1
+            if fsym_idx == fsym_max:
+                fsym_idx = 0
+            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
+                tsym_idx += 1
+                if tsym_idx == tsym_max:
+                    tsym_idx = 0
+            worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+            worker.set_break_error()
             worker.restart_worker()
