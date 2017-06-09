@@ -163,10 +163,12 @@ if __name__ == '__main__':
             if fsym_idx == fsym_max:
                 fsym_idx = 0
             if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
-                tsym_idx += 1
-                if tsym_idx == tsym_max:
-                    tsym_idx = 0
-            worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+                if tsym_idx + 1 == tsym_max:
+                    worker.set_sym(fsym_list[fsym_idx], tsym_list[0])
+                else:
+                    worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx+1])
+            else:
+                worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.set_break_error()
             worker.restart_worker()
             time.sleep(3)
