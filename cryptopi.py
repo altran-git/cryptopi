@@ -94,6 +94,17 @@ def debounce(button):
             return
         time.sleep(.01)
 
+def set_symbol_for_display(fsym_list, tsym_list, fsym_idx, tsym_idx, tsym_max, worker):
+    if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
+        if tsym_idx + 1 == tsym_max:
+            worker.set_sym(fsym_list[fsym_idx], tsym_list[0])
+        else:
+            worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx + 1])
+    else:
+        worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
+    worker.set_break_error()
+    worker.restart_worker()
+
 if __name__ == '__main__':
     with open('symbols.txt', 'r') as fsym_list:
         fsym_list = [i.upper().strip() for i in fsym_list if i.upper().strip() != '']
@@ -111,35 +122,18 @@ if __name__ == '__main__':
         if lcd.is_pressed(LCD.SELECT):
             debounce(LCD.SELECT)
             cycle = not cycle
-            # worker.restart_worker()
         elif lcd.is_pressed(LCD.LEFT):
             debounce(LCD.LEFT)
             fsym_idx -= 1
             if fsym_idx == -1:
                 fsym_idx = fsym_max - 1
-            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
-                if tsym_idx + 1 == tsym_max:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[0])
-                else:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx+1])
-            else:
-                worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
-            worker.set_break_error()
-            worker.restart_worker()
+            set_symbol_for_display(fsym_list, tsym_list, fsym_idx, tsym_idx, tsym_max, worker)
         elif lcd.is_pressed(LCD.RIGHT):
             debounce(LCD.RIGHT)
             fsym_idx += 1
             if fsym_idx == fsym_max:
                 fsym_idx = 0
-            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
-                if tsym_idx + 1 == tsym_max:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[0])
-                else:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx+1])
-            else:
-                worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
-            worker.set_break_error()
-            worker.restart_worker()
+            set_symbol_for_display(fsym_list, tsym_list, fsym_idx, tsym_idx, tsym_max, worker)
         elif lcd.is_pressed(LCD.UP):
             debounce(LCD.UP)
             worker.toggle_details()
@@ -149,26 +143,11 @@ if __name__ == '__main__':
             tsym_idx += 1
             if tsym_idx == tsym_max:
                 tsym_idx = 0
-            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
-                if tsym_idx + 1 == tsym_max:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[0])
-                else:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx+1])
-            else:
-                worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
-            worker.restart_worker()
+            set_symbol_for_display(fsym_list, tsym_list, fsym_idx, tsym_idx, tsym_max, worker)
 
         if cycle is True:
             fsym_idx += 1
             if fsym_idx == fsym_max:
                 fsym_idx = 0
-            if fsym_list[fsym_idx] == tsym_list[tsym_idx]:
-                if tsym_idx + 1 == tsym_max:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[0])
-                else:
-                    worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx+1])
-            else:
-                worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
-            worker.set_break_error()
-            worker.restart_worker()
+            set_symbol_for_display(fsym_list, tsym_list, fsym_idx, tsym_idx, tsym_max, worker)
             time.sleep(3)
