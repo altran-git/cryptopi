@@ -169,3 +169,4 @@ if __name__ == '__main__':
             worker.set_sym(fsym_list[fsym_idx], tsym_list[tsym_idx])
             worker.set_break_error()
             worker.restart_worker()
+            time.sleep(3)
